@@ -9,6 +9,11 @@ Our platform ensures that only **authentic, verified owners** can list propertie
 This verification process reduces the risk of **cyber scams** and promotes a **secure, efficient, and optimized** owner–renter relationship.
 
 ---
+## 🎥 Demo Video
+
+[![Project Demo](https://drive.google.com/file/d/1OwzUlI8THy_rKSG-F6LmyzHe4EOhn4Lm/view?usp=sharing)](https://drive.google.com/file/d/1OwzUlI8THy_rKSG-F6LmyzHe4EOhn4Lm/view?usp=sharing)
+
+---
 
 ## 🚀 Features
 - **Secure User Authentication** – Registration, login, and role-based access control (Renter, Owner, Admin).
