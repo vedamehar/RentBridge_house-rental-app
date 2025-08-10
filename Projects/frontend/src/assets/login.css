@@ -1,0 +1,32 @@
+.login-bg {
+  min-height: calc(100vh - 160px);
+  width: 100%;
+  background: linear-gradient(to bottom right, #f0f8ff, #dbeafe);
+  background-image: url('https://imgs.search.brave.com/viQfixTBXGr-eac1kDNPxb_C3eoe7Q0qYBYi1vMUqpA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTMw/NTk0ODc0OS9waG90/by9yZWFsLWVzdGF0/ZS1hZ2VudC13b3Jr/aW5nLW9uLWxhcHRv/cC5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9ZXJ6d2VBZldJ/aDluT1VXdGVITTlW/UnlhTC13R0I1aXBO/c0pBUWxKcmxWMD0');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 400px;
+  background-color: rgba(255, 255, 255, 0.9);
+  animation: slideDown 0.8s ease-in-out;
+  border-radius: 15px;
+  align-items: center;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

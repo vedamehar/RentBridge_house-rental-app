@@ -1,0 +1,8 @@
+.footer a {
+  text-decoration: none;
+  transition: 0.3s;
+}
+.footer a:hover {
+  color: #ffc107;
+  text-decoration: underline;
+}
