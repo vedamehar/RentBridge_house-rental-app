@@ -154,13 +154,3 @@ This project is licensed under the **MIT License** – feel free to use and modi
 For queries, reach out to: **[vedamehar@gmail.com](mailto:vedamehar@gmail.com)**
 
 ```
-
----
-
-If you want, I can also make this README more **GitHub-friendly** by adding:
-- **Badges** (Tech Stack, License, Version)
-- **Screenshots** (Homepage, Dashboards, Booking Page)
-- **Live Demo Link**
-
-Do you want me to prepare that enhanced version?
-```
