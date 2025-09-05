@@ -1,19 +1,33 @@
 const User = require('../models/user');
 const Property = require('../models/Property');
 const Booking = require('../models/Booking');
+const Contact = require('../models/Contact');
 
 const getDashboardStats = async (req, res) => {
   try {
-    const [owners, renters, properties, bookings] = await Promise.all([
+    const [owners, renters, properties, bookings, contacts] = await Promise.all([
       User.countDocuments({ type: 'owner' }),
       User.countDocuments({ type: 'renter' }),
       Property.countDocuments(),
       Booking.countDocuments(),
+      Contact.countDocuments(),
     ]);
 
-    res.json({ owners, renters, properties, bookings });
+    res.json({ 
+      success: true,
+      data: {
+        owners, 
+        renters, 
+        properties, 
+        bookings, 
+        contacts 
+      }
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
   }
 };
 
@@ -66,19 +80,112 @@ const getAllBookings = async (req, res) => {
     const bookings = await Booking.find()
       .populate('userId', 'name email')
       .populate('ownerId', 'name email')
-      .populate('propertyId', 'title location rent');
-    res.json(bookings);
+      .populate('propertyId', 'title location prop_amt');
+    res.json({ 
+      success: true,
+      data: bookings 
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
   }
 };
 
 const cancelBooking = async (req, res) => {
   try {
-    await Booking.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Booking cancelled successfully' });
+    const booking = await Booking.findByIdAndDelete(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Booking not found' 
+      });
+    }
+    
+    // Update property status back to available
+    await Property.findByIdAndUpdate(
+      booking.propertyId,
+      { status: 'available' },
+      { new: true }
+    );
+    
+    res.json({ 
+      success: true,
+      message: 'Booking cancelled successfully' 
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
+  }
+};
+
+// Add contact-related functions
+const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 });
+    res.json({ 
+      success: true,
+      data: contacts 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
+  }
+};
+
+const updateContactStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    
+    if (!contact) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Contact not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'Contact status updated successfully',
+      data: contact 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
+  }
+};
+
+const deleteContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Contact not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'Contact deleted successfully' 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      message: err.message 
+    });
   }
 };
 
@@ -89,5 +196,8 @@ module.exports = {
   getAllProperties,
   deleteProperty,
   getAllBookings,
-  cancelBooking
+  cancelBooking,
+  getAllContacts,
+  updateContactStatus,
+  deleteContact
 };

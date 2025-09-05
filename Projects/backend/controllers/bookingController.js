@@ -175,6 +175,26 @@ const rejectBooking = async (req, res) => {
   }
 };
 
+// Get all bookings (Admin only)
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate('userId', 'name email phone')
+      .populate('propertyId', 'title prop_address prop_amt')
+      .sort({ createdAt: -1 });
+    
+    res.json({ 
+      success: true, 
+      data: bookings 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      message: err.message 
+    });
+  }
+};
+
 
 
 module.exports = {
@@ -183,5 +203,6 @@ module.exports = {
   addMessage,
   getOwnerBookings,
   approveBooking,
-  rejectBooking
+  rejectBooking,
+  getAllBookings
 };

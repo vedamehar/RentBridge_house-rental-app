@@ -46,8 +46,8 @@ app.use(express.urlencoded({ extended: true })); // Add this for form data
 
 // Route files
 const users = require('./routes/UserRoutes');
-const properties = require('./routes/propertyRoutes');
-const bookings = require('./routes/bookingRoute');
+const properties = require('./routes/PropertyRoutes');
+const bookings = require('./routes/BookingRoute'); // Fixed case-sensitive import
 const admin = require('./routes/adminRoutes');
 const messages = require('./routes/messageRoutes');
 const contact = require('./routes/contactRoutes');
