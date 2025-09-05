@@ -1,7 +1,7 @@
 // controllers/bookingController.js
 const Booking = require('../models/Booking');
 const Property = require('../models/Property');
-const User = require('../models/User');
+const User = require('../models/user');
 
 const  getUserBookings = async (req, res) => {
   try {

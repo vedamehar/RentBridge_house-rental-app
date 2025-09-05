@@ -1,7 +1,7 @@
 // controllers/userController.js
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User');
+const User = require('../models/user');
 const Property = require('../models/Property');
 const Booking = require('../models/Booking');
 
