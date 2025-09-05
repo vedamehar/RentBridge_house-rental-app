@@ -13,7 +13,9 @@ const  getUserBookings = async (req, res) => {
     .populate('propertyId', 'title prop_address location prop_amt prop_images')
     .populate('ownerId', 'name email');
     
-    console.log(`Found ${bookings.length} bookings for user ${req.params.userId}`); // Debug log
+    console.log(`Found ${bookings.length} bookings for user ${req.params.userId}`);
+    console.log('Sample booking structure:', JSON.stringify(bookings[0], null, 2));
+    
     res.json({ success: true, bookings });
   } catch (err) {
     console.error('Error in getUserBookings:', err);
