@@ -34,7 +34,11 @@ const Chat = () => {
   const fetchMessages = async () => {
     try {
       const response = await axios.get(
+<<<<<<< HEAD
         `${import.meta.env.VITE_API_URL}/api/messages/${ownerId}`,
+=======
+        `http://localhost:5000/api/messages/${ownerId}`,
+>>>>>>> 69aa8fb055145eb56359cfc64047ad1d71e52589
         { withCredentials: true }
       );
       setMessages(response.data.messages);
@@ -49,7 +53,11 @@ const Chat = () => {
 
     try {
       await axios.post(
+<<<<<<< HEAD
         `${import.meta.env.VITE_API_URL}/api/messages/${ownerId}`,
+=======
+        `http://localhost:5000/api/messages/${ownerId}`,
+>>>>>>> 69aa8fb055145eb56359cfc64047ad1d71e52589
         { content: newMessage },
         { withCredentials: true }
       );
