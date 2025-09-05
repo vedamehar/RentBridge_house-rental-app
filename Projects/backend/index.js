@@ -60,7 +60,7 @@ app.use('/api/admin', admin);
 app.use('/api/messages', messages);
 app.use('/api/contact', contact);
 
-// Health check route
+// Health check route - Updated: Sept 6, 2025
 app.get('/api/health', (req, res) => {
   res.json({ 
     success: true, 
