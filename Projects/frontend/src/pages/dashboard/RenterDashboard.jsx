@@ -162,10 +162,20 @@ const RenterDashboard = () => {
   };
 
   const fetchBookedProperties = useCallback(async () => {
-    if (!currentUser?._id) return;
+    if (!currentUser?._id) {
+      console.log('No current user, skipping booking fetch');
+      return;
+    }
     try {
+      console.log('Starting fetchBookedProperties for user:', currentUser._id);
       const bookingsData = await bookingService.getBookingsForUser(currentUser._id);
-      setBookedProperties(Array.isArray(bookingsData) ? bookingsData : []);
+      console.log('fetchBookedProperties received data:', bookingsData);
+      console.log('Is array?', Array.isArray(bookingsData));
+      console.log('Length:', bookingsData?.length);
+      
+      const finalBookings = Array.isArray(bookingsData) ? bookingsData : [];
+      console.log('Setting bookedProperties to:', finalBookings);
+      setBookedProperties(finalBookings);
     } catch (error) {
       console.error('Error fetching booked properties:', error);
       setError('Failed to load your bookings.');
@@ -195,6 +205,13 @@ const RenterDashboard = () => {
       setLoading(false);
     }
   }, []);
+
+  // Debug useEffect to monitor bookedProperties changes
+  useEffect(() => {
+    console.log('bookedProperties state changed:', bookedProperties);
+    console.log('bookedProperties length:', bookedProperties.length);
+    console.log('bookedProperties type:', typeof bookedProperties);
+  }, [bookedProperties]);
 
   useEffect(() => {
     if (currentUser) {
@@ -394,11 +411,20 @@ const RenterDashboard = () => {
                           onError={(e) => { e.target.src = fallbackImage; }}
                         />
                         <Card.Body>
-                          <Card.Title>{booking.propertyId?.title || 'Unknown Property'}</Card.Title>
+                          <Card.Title>
+                            {booking.propertyId?.title || booking.propertyName || 'Property Booking'}
+                          </Card.Title>
                           <Card.Text>
                             <Badge bg="success">{booking.status || 'Booked'}</Badge><br/>
-                            <small>From: {new Date(booking.startDate).toLocaleDateString()}</small><br/>
-                            <small>To: {new Date(booking.endDate).toLocaleDateString()}</small>
+                            {booking.propertyId?.prop_address && (
+                              <><strong>Address:</strong> {booking.propertyId.prop_address}<br/></>
+                            )}
+                            {booking.propertyId?.prop_amt && (
+                              <><strong>Rent:</strong> ₹{booking.propertyId.prop_amt}<br/></>
+                            )}
+                            <small><strong>Booking ID:</strong> {booking.bookingId || booking._id}</small><br/>
+                            <small><strong>From:</strong> {new Date(booking.startDate).toLocaleDateString()}</small><br/>
+                            <small><strong>To:</strong> {new Date(booking.endDate).toLocaleDateString()}</small>
                           </Card.Text>
                           <Button
                             variant="outline-danger"

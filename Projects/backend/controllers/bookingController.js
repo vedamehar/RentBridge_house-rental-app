@@ -5,14 +5,18 @@ const User = require('../models/user');
 
 const  getUserBookings = async (req, res) => {
   try {
+      // Get bookings with any active status (approved, pending, confirmed)
       const bookings = await Booking.find({
         userId: req.params.userId,
-        status: 'approved'
+        status: { $in: ['approved', 'pending', 'confirmed'] }
     })
-    .populate('propertyId', 'title location images rent');
+    .populate('propertyId', 'title prop_address location prop_amt prop_images')
+    .populate('ownerId', 'name email');
     
+    console.log(`Found ${bookings.length} bookings for user ${req.params.userId}`); // Debug log
     res.json({ success: true, bookings });
   } catch (err) {
+    console.error('Error in getUserBookings:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -104,6 +108,9 @@ const requestBooking = async (req, res) => {
 // Direct booking creation (for confirmed bookings without approval process)
 const createBooking = async (req, res) => {
   try {
+    console.log('Creating booking with data:', req.body); // Debug log
+    console.log('User from auth:', req.user); // Debug log
+    
     const property = await Property.findById(req.body.propertyId).populate('userId');
     if (!property) {
       return res.status(404).json({ 
@@ -112,6 +119,8 @@ const createBooking = async (req, res) => {
       });
     }
 
+    console.log('Found property:', property.title || property.prop_address); // Debug log
+
     if (property.status !== 'available') {
       return res.status(400).json({
         success: false,
@@ -119,17 +128,17 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // Check if user already has a booking for this property
+    // Check if user already has an active booking for this property
     const existingBooking = await Booking.findOne({
       propertyId: req.body.propertyId,
       userId: req.user._id,
-      status: { $in: ['pending', 'approved', 'confirmed'] }
+      status: { $in: ['pending', 'approved'] } // Only check for active bookings
     });
 
     if (existingBooking) {
       return res.status(400).json({
         success: false,
-        message: 'You already have a booking for this property'
+        message: 'You already have an active booking for this property'
       });
     }
 
@@ -147,9 +156,12 @@ const createBooking = async (req, res) => {
 
     await booking.save();
     
-    // Update property status to booked
-    property.status = 'booked';
-    await property.save();
+    // Update property status to booked using findByIdAndUpdate to avoid validation issues
+    await Property.findByIdAndUpdate(
+      req.body.propertyId, 
+      { status: 'booked' },
+      { runValidators: false } // Skip validation for this update
+    );
     
     res.status(201).json({
       success: true,
