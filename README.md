@@ -3,6 +3,10 @@
 
 # 🏠 MERN House Rental App (RentBridge)
 
+## 🌐 Live Application
+🚀 **Frontend**: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)  
+🔧 **Backend API**: [https://rentbridge-backend.onrender.com](https://rentbridge-backend.onrender.com)
+
 ## 📌 Project Overview
 The **MERN House Rental App** (RentBridge) is designed to bridge the gap between property owners and renters.  
 Our platform ensures that only **authentic, verified owners** can list properties, as all users must be approved by admins before they can access full functionality.  
@@ -45,42 +49,151 @@ This verification process reduces the risk of **cyber scams** and promotes a **s
 **Other Tools:**
 - Postman (API Testing)
 - Git & GitHub (Version Control)
-- Vercel/Netlify (Frontend Deployment)
+- Vercel (Frontend Deployment)
+- Render.com (Backend Deployment)
 - MongoDB Atlas (Database Hosting)
+
+---
+
+## 🌐 Deployment Details
+
+### **Production Environment**
+- **Frontend**: Deployed on **Vercel** with automatic deployments from GitHub
+- **Backend**: Deployed on **Render.com** with environment variables configured
+- **Database**: **MongoDB Atlas** cloud database
+- **CORS**: Configured for cross-domain communication between Vercel and Render
+- **Authentication**: JWT-based with HTTP-only cookies for secure cross-domain auth
+
+### **Environment Variables**
+**Frontend (Vercel):**
+```env
+VITE_API_URL=https://rentbridge-backend.onrender.com
+```
+
+**Backend (Render):**
+```env
+PORT=5000
+MONGO_URI=your-mongodb-atlas-uri
+JWT_SECRET=your-secret-key
+NODE_ENV=production
+```
 
 ---
 
 ## 📂 Folder Structure
 ```plaintext
-mern-house-rental-app/
-├── backend/                  # Node.js + Express backend
-│   ├── controllers/          # Request handlers
-│   ├── middleware/           # Auth & role-based access
-│   ├── models/               # Mongoose schemas
-│   ├── routes/               # API endpoints
-│   ├── uploads/              # Uploaded property images
-│   ├── server.js             # Entry point
-│
-├── frontend/                 # React frontend
-│   ├── src/
-│   │   ├── components/       # Reusable UI components
-│   │   ├── pages/            # App pages (Login, Dashboard, etc.)
-│   │   ├── context/          # AuthContext for global state
-│   │   ├── App.jsx           # Root component
-│   │   └── index.js          # Entry point
-│
-├── .env                      # Environment variables
-├── package.json              # Dependencies
-└── README.md                 # Project documentation
+RentBridge_Final/
+├── .git/                     # Git repository
+├── .gitignore               # Git ignore file
+├── README.md                # Project documentation
+└── Projects/                # Main project folder
+    ├── deploy.sh            # Deployment script
+    ├── DEPLOYMENT_GUIDE.md  # Deployment documentation
+    ├── status-check.js      # Application status checker
+    ├── backend/             # Node.js + Express backend
+    │   ├── .env             # Environment variables
+    │   ├── .env.production.example # Production env template
+    │   ├── .gitignore       # Backend git ignore
+    │   ├── package.json     # Backend dependencies
+    │   ├── package-lock.json # Dependency lock file
+    │   ├── index.js         # Backend entry point
+    │   ├── vercel.json      # Vercel configuration
+    │   ├── config/          # Database configuration
+    │   │   └── db.js        # MongoDB connection
+    │   ├── context/         # Auth context (backend)
+    │   │   └── AuthContext.js
+    │   ├── controllers/     # Request handlers
+    │   │   ├── adminController.js
+    │   │   ├── bookingController.js
+    │   │   ├── contactController.js
+    │   │   ├── messageController.js
+    │   │   ├── propertyController.js
+    │   │   └── userController.js
+    │   ├── middlewares/     # Auth & role-based access
+    │   │   ├── auth.js      # JWT authentication
+    │   │   └── roleMiddlewares.js
+    │   ├── models/          # Mongoose schemas
+    │   │   ├── Booking.js   # Booking model
+    │   │   ├── Contact.js   # Contact model
+    │   │   ├── Message.js   # Message model
+    │   │   ├── Property.js  # Property model
+    │   │   └── user.js      # User model
+    │   ├── routes/          # API endpoints
+    │   │   ├── adminRoutes.js
+    │   │   ├── BookingRoute.js
+    │   │   ├── contactRoutes.js
+    │   │   ├── messageRoutes.js
+    │   │   ├── PropertyRoutes.js
+    │   │   ├── ProtectedRoute.js
+    │   │   └── UserRoutes.js
+    │   └── services/        # Business logic
+    │       ├── adminService.js
+    │       └── propertyService.js
+    │
+    └── frontend/            # React frontend (Vite)
+        ├── .env.production.example # Production env template
+        ├── dist/            # Build output (generated)
+        ├── public/          # Public assets
+        ├── package.json     # Frontend dependencies
+        ├── package-lock.json # Dependency lock file
+        ├── index.html       # HTML template
+        ├── eslint.config.js # ESLint configuration
+        ├── vite.config.js   # Vite configuration
+        ├── vercel.json      # Vercel configuration
+        └── src/
+            ├── App.css      # Global styles
+            ├── App.jsx      # Root component
+            ├── index.css    # Base styles
+            ├── main.jsx     # Main entry point
+            ├── assets/      # Static assets
+            ├── components/  # Reusable UI components
+            │   ├── AddPropertyForm.jsx
+            │   ├── BookingForm.jsx
+            │   ├── Chat.jsx
+            │   ├── ChatModal.jsx
+            │   ├── FancyFooter.jsx
+            │   ├── FancyFooter.css
+            │   ├── FancyNavbar.jsx
+            │   ├── FancyNavbar.css
+            │   ├── Header.jsx
+            │   ├── LoadingSpinner.jsx
+            │   ├── PropertyCard.jsx
+            │   ├── ProtectedRoute.jsx
+            │   ├── PublicRoute.jsx
+            │   ├── ReviewStars.jsx
+            │   ├── RoleSelector.jsx
+            │   └── Wishlist.jsx
+            ├── context/     # Global state management
+            │   └── AuthContext.jsx
+            ├── pages/       # App pages
+            │   ├── dashboard/ # Dashboard components
+            │   ├── Booking.jsx
+            │   ├── Contact.jsx
+            │   ├── ContactPage.jsx
+            │   ├── DetailedProperty.jsx
+            │   ├── Home.jsx
+            │   ├── Login.jsx
+            │   ├── Profile.jsx
+            │   ├── Register.jsx
+            │   ├── SignupPage.jsx
+            │   └── Unauthorized.jsx
+            ├── routes/      # Route configuration
+            └── services/    # API services
+```
 
 
 ---
 
 ## ⚙️ Installation & Setup
+
+### 🌐 **Access Live Application**
+Visit the live application: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)
+
+### 💻 **Local Development Setup**
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/mern-house-rental-app.git
-cd mern-house-rental-app
+git clone https://github.com/vedamehar/RentBridge_house-rental-app.git
+cd RentBridge_house-rental-app/Projects
 ````
 
 2. **Backend Setup**
@@ -96,6 +209,7 @@ Create a `.env` file in the backend folder:
 PORT=5000
 MONGO_URI=your-mongodb-atlas-uri
 JWT_SECRET=your-secret-key
+NODE_ENV=development
 ```
 
 Run the backend:
@@ -109,28 +223,63 @@ npm start
 ```bash
 cd ../frontend
 npm install
+```
+
+Create a `.env` file in the frontend folder:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Run the frontend:
+
+```bash
 npm run dev
 ```
+
+### 🔗 **API Endpoints**
+- **Health Check**: `GET /api/health`
+- **User Registration**: `POST /api/users/register`
+- **User Login**: `POST /api/users/login`
+- **Properties**: `GET /api/properties`
+- **Bookings**: `GET /api/bookings`
+- **Admin Routes**: `GET /api/admin/*`
 
 ---
 
 ## 🧪 Testing
 
-* **Manual Testing:**
-  Use Postman to test backend API routes.
-* **User Acceptance Testing:**
-  Conducted for Registration, Login, Property Management, Booking, Wishlist, and Admin Approval.
+### **Live Application Testing**
+Test all features on the live application: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)
+
+### **API Testing**
+- **Backend Health**: [https://rentbridge-backend.onrender.com/api/health](https://rentbridge-backend.onrender.com/api/health)
+- **Properties API**: [https://rentbridge-backend.onrender.com/api/properties](https://rentbridge-backend.onrender.com/api/properties)
+
+### **Manual Testing**
+* Use Postman to test backend API routes
+* **User Acceptance Testing**: Completed for Registration, Login, Property Management, Booking, Wishlist, and Admin Approval
+
+### **Authentication Testing**
+* ✅ User Registration with role validation
+* ✅ Secure login with JWT tokens
+* ✅ Cross-domain authentication
+* ✅ Role-based access control
+* ✅ Session persistence
 
 ---
 
 ## 📅 Project Timeline
 
 * **Development Period:** 25 July 2025 – 10 August 2025
-* **Sprints:**
+* **Deployment Period:** August 2025 - September 2025
+* **Current Status:** ✅ **LIVE IN PRODUCTION**
 
+* **Sprints:**
   * Sprint 1: Registration & Login
   * Sprint 2: Property Management & Search
   * Sprint 3: Booking, Wishlist & Admin Approval
+  * Sprint 4: Deployment & Production Optimization
 
 ---
 
@@ -157,5 +306,8 @@ This project is licensed under the **MIT License** – feel free to use and modi
 ## 📧 Contact
 
 For queries, reach out to: **[vedamehar@gmail.com](mailto:vedamehar@gmail.com)**
+
+**Live Application**: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)  
+**GitHub Repository**: [https://github.com/vedamehar/RentBridge_house-rental-app](https://github.com/vedamehar/RentBridge_house-rental-app)
 
 ```
