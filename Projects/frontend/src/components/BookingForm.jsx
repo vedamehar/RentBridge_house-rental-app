@@ -13,11 +13,7 @@ const BookingForm = ({ propertyId, show, onHide }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-<<<<<<< HEAD
       await axios.post(`${import.meta.env.VITE_API_URL}/api/properties/${propertyId}/book`, bookingData, {
-=======
-      await axios.post(`http://localhost:5000/api/properties/${propertyId}/book`, bookingData, {
->>>>>>> 69aa8fb055145eb56359cfc64047ad1d71e52589
         headers: {
           Authorization: `Bearer ${token}`
         }
