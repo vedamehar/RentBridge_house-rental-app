@@ -5,17 +5,16 @@ const User = require('../models/user');
 
 const  getUserBookings = async (req, res) => {
   try {
-      // Get bookings with any active status (approved, pending, confirmed)
+      // Get bookings with any status (including cancelled for history)
       const bookings = await Booking.find({
         userId: req.params.userId,
-        status: { $in: ['approved', 'pending', 'confirmed'] }
+        status: { $in: ['approved', 'pending', 'confirmed', 'cancelled'] }
     })
     .populate('propertyId', 'title prop_address location prop_amt prop_images')
-    .populate('ownerId', 'name email');
+    .populate('ownerId', 'name email')
+    .sort({ createdAt: -1 }); // Sort by newest first
     
     console.log(`Found ${bookings.length} bookings for user ${req.params.userId}`);
-    console.log('Sample booking structure:', JSON.stringify(bookings[0], null, 2));
-    
     res.json({ success: true, bookings });
   } catch (err) {
     console.error('Error in getUserBookings:', err);
@@ -110,9 +109,6 @@ const requestBooking = async (req, res) => {
 // Direct booking creation (for confirmed bookings without approval process)
 const createBooking = async (req, res) => {
   try {
-    console.log('Creating booking with data:', req.body); // Debug log
-    console.log('User from auth:', req.user); // Debug log
-    
     const property = await Property.findById(req.body.propertyId).populate('userId');
     if (!property) {
       return res.status(404).json({ 
@@ -120,8 +116,6 @@ const createBooking = async (req, res) => {
         message: 'Property not found' 
       });
     }
-
-    console.log('Found property:', property.title || property.prop_address); // Debug log
 
     if (property.status !== 'available') {
       return res.status(400).json({
@@ -152,7 +146,7 @@ const createBooking = async (req, res) => {
       userName: req.user.name || req.body.userName,
       ownerId: property.userId._id,
       ownerName: property.userId.name || req.body.ownerName,
-      propertyName: property.title || property.prop_address,
+      propertyName: property.title || property.prop_address || `Property ${property._id}`,
       status: "approved"  // Direct approval instead of confirmed
     });
 
@@ -274,6 +268,88 @@ const getAllBookings = async (req, res) => {
   }
 };
 
+// Cancel booking (for renters)
+const cancelBooking = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const booking = await Booking.findById(bookingId);
+    
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    // Verify the booking belongs to the user requesting cancellation
+    if (booking.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized to cancel this booking' });
+    }
+
+    // Check if booking can be cancelled (only pending or approved bookings)
+    if (!['pending', 'approved'].includes(booking.status)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Cannot cancel booking with current status' 
+      });
+    }
+
+    // Update booking status to cancelled
+    booking.status = 'cancelled';
+    booking.cancelledAt = new Date();
+    booking.cancellationReason = req.body.reason || 'Cancelled by renter';
+    await booking.save();
+
+    // Make property available again
+    await Property.findByIdAndUpdate(
+      booking.propertyId,
+      { status: 'available' },
+      { new: true }
+    );
+
+    res.json({ 
+      success: true, 
+      message: 'Booking cancelled successfully',
+      booking 
+    });
+  } catch (err) {
+    console.error('Booking cancellation error:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to cancel booking',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+};
+
+// Helper function to fix bookings with missing property names
+const fixBookingPropertyNames = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ 
+      $or: [
+        { propertyName: { $exists: false } },
+        { propertyName: '' },
+        { propertyName: null }
+      ]
+    }).populate('propertyId');
+
+    let updated = 0;
+    for (const booking of bookings) {
+      if (booking.propertyId) {
+        booking.propertyName = booking.propertyId.title || booking.propertyId.prop_address || `Property ${booking.propertyId._id}`;
+        await booking.save();
+        updated++;
+      }
+    }
+
+    res.json({ 
+      success: true, 
+      message: `Fixed ${updated} bookings with missing property names` 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      message: err.message 
+    });
+  }
+};
 
 
 module.exports = {
@@ -284,5 +360,7 @@ module.exports = {
   getOwnerBookings,
   approveBooking,
   rejectBooking,
-  getAllBookings
+  cancelBooking,      // Added for renter cancellation
+  getAllBookings,
+  fixBookingPropertyNames  // Added for fixing existing data
 };

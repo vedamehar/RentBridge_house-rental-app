@@ -846,7 +846,7 @@ const getValidImage = (img) => {
   <Card key={booking._id} className="mb-3 shadow">
     <Card.Body>
       <Card.Title>
-        {booking.propertyId?.title || 'Property'} in 
+        {booking.propertyId?.title || booking.propertyName || booking.propertyId?.prop_address || 'Property'} in 
         {booking.propertyId?.location?.city || 'Unknown'}
       </Card.Title>
             <Card.Subtitle className="mb-2 text-muted">

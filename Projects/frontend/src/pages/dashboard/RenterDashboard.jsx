@@ -136,6 +136,9 @@ const RenterDashboard = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState(null);
+  const [cancellationReason, setCancellationReason] = useState('');
   const [wishlist, setWishlist] = useState(() => {
     // Initialize wishlist from localStorage
     const savedWishlist = localStorage.getItem('wishlist');
@@ -327,6 +330,54 @@ const RenterDashboard = () => {
     }
   };
 
+  const handleCancelBooking = async () => {
+    if (!bookingToCancel) return;
+
+    try {
+      setLoading(true);
+      
+      // Call the cancellation service
+      await bookingService.cancelBooking(bookingToCancel._id, cancellationReason);
+      
+      // Update local state
+      setBookedProperties(prev => prev.filter(booking => booking._id !== bookingToCancel._id));
+      
+      // If the property exists, add it back to available properties
+      if (bookingToCancel.propertyId) {
+        const propertyToRestore = {
+          ...bookingToCancel.propertyId,
+          status: 'available'
+        };
+        setProperties(prev => [...prev, propertyToRestore]);
+      }
+      
+      alert('Booking cancelled successfully!');
+      setShowCancelModal(false);
+      setBookingToCancel(null);
+      setCancellationReason('');
+      
+      // Refresh data to ensure consistency
+      fetchProperties();
+      fetchBookedProperties();
+    } catch (err) {
+      console.error('Cancellation failed:', err);
+      setError(err.message || 'Failed to cancel booking.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openCancelModal = (booking) => {
+    setBookingToCancel(booking);
+    setShowCancelModal(true);
+  };
+
+  const closeCancelModal = () => {
+    setShowCancelModal(false);
+    setBookingToCancel(null);
+    setCancellationReason('');
+  };
+
   return (
     <Container className="mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -415,7 +466,15 @@ const RenterDashboard = () => {
                             {booking.propertyId?.title || booking.propertyName || 'Property Booking'}
                           </Card.Title>
                           <Card.Text>
-                            <Badge bg="success">{booking.status || 'Booked'}</Badge><br/>
+                            <Badge bg={
+                              booking.status === 'cancelled' ? 'danger' :
+                              booking.status === 'approved' ? 'success' :
+                              booking.status === 'pending' ? 'warning' : 'primary'
+                            }>
+                              {booking.status === 'cancelled' ? 'Cancelled' :
+                               booking.status === 'approved' ? 'Confirmed' :
+                               booking.status === 'pending' ? 'Pending' : booking.status || 'Booked'}
+                            </Badge><br/>
                             {booking.propertyId?.prop_address && (
                               <><strong>Address:</strong> {booking.propertyId.prop_address}<br/></>
                             )}
@@ -425,17 +484,26 @@ const RenterDashboard = () => {
                             <small><strong>Booking ID:</strong> {booking.bookingId || booking._id}</small><br/>
                             <small><strong>From:</strong> {new Date(booking.startDate).toLocaleDateString()}</small><br/>
                             <small><strong>To:</strong> {new Date(booking.endDate).toLocaleDateString()}</small>
+                            {booking.status === 'cancelled' && booking.cancelledAt && (
+                              <><br/><small><strong>Cancelled on:</strong> {new Date(booking.cancelledAt).toLocaleDateString()}</small></>
+                            )}
                           </Card.Text>
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => {
-                              alert("Cancellation feature not yet implemented.");
-                              // To implement: call a cancel booking service here
-                            }}
-                          >
-                            Cancel Booking
-                          </Button>
+                          {/* Only show cancel button for active bookings */}
+                          {['pending', 'approved'].includes(booking.status) && (
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() => openCancelModal(booking)}
+                              disabled={loading}
+                            >
+                              Cancel Booking
+                            </Button>
+                          )}
+                          {booking.status === 'cancelled' && (
+                            <Button variant="secondary" size="sm" disabled>
+                              Cancelled
+                            </Button>
+                          )}
                         </Card.Body>
                       </Card>
                     </Col>
@@ -510,6 +578,44 @@ const RenterDashboard = () => {
           onClose={() => setChatOpen(false)}
         />
       )}
+
+      {/* Booking Cancellation Modal */}
+      <Modal show={showCancelModal} onHide={closeCancelModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Cancel Booking</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to cancel this booking?</p>
+          {bookingToCancel && (
+            <div className="mb-3">
+              <strong>Property:</strong> {bookingToCancel.propertyId?.title || bookingToCancel.propertyName}<br/>
+              <strong>Booking ID:</strong> {bookingToCancel.bookingId || bookingToCancel._id}<br/>
+              <strong>Dates:</strong> {new Date(bookingToCancel.startDate).toLocaleDateString()} - {new Date(bookingToCancel.endDate).toLocaleDateString()}
+            </div>
+          )}
+          <Form.Group className="mb-3">
+            <Form.Label>Reason for cancellation (optional):</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+              placeholder="Please let us know why you're cancelling..."
+            />
+          </Form.Group>
+          <Alert variant="warning">
+            <small>⚠️ Once cancelled, this property will become available for other renters to book.</small>
+          </Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeCancelModal} disabled={loading}>
+            Keep Booking
+          </Button>
+          <Button variant="danger" onClick={handleCancelBooking} disabled={loading}>
+            {loading ? 'Cancelling...' : 'Confirm Cancellation'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

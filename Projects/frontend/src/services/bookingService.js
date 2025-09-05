@@ -44,7 +44,28 @@ const getBookingsForUser = async (userId) => {
     }
   };
 
+const cancelBooking = async (bookingId, reason = '') => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.patch(`${API_URL}/${bookingId}/cancel`, 
+      { reason },
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling booking:', error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
 export default {
   createBooking,
   getBookingsForUser,
+  cancelBooking,
 };

@@ -340,7 +340,7 @@ const AdminDashboard = () => {
                   <tr key={b._id}>
                     <td>{b._id}</td>
                     <td>{b.userId?.name}</td>
-                    <td>{b.propertyId?.title}</td>
+                    <td>{b.propertyId?.title || b.propertyName || b.propertyId?.prop_address || 'Unknown Property'}</td>
                     <td>{b.status}</td>
                     <td><Button variant="danger" onClick={() => handleCancelBooking(b._id)}>Cancel</Button></td>
                   </tr>

@@ -13,6 +13,8 @@ router.get("/user/:userId", bookingController.getUserBookings);
 router.get("/owner", bookingController.getOwnerBookings);
 router.patch("/:id/approve", bookingController.approveBooking);
 router.patch("/:id/reject", bookingController.rejectBooking);
+router.patch("/:id/cancel", bookingController.cancelBooking);  // Added for renter cancellation
 router.post("/:id/message", bookingController.addMessage);
+router.post("/fix-property-names", auth, authRole('admin'), bookingController.fixBookingPropertyNames);
 
 module.exports = router;

@@ -2,8 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import SignupPage from '../pages/SignupPage';
-import ContactPage from '../pages/ContactPage';
+import Register from '../pages/Register';
+import Contact from '../pages/Contact';
 import OwnerDashboard from '../pages/dashboard/OwnerDashboard';
 import RenterDashboard from '../pages/dashboard/RenterDashboard';
 import AdminDashboard from '../pages/dashboard/AdminDashboard';
@@ -14,8 +14,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<SignupPage />} />
-      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/owner-dashboard" element={
         <ProtectedRoute role="owner">
           <OwnerDashboard />
