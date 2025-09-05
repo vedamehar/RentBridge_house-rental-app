@@ -6,7 +6,7 @@ import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 
-// In main.jsx or similar entry file
+// Set axios defaults with environment variable
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
