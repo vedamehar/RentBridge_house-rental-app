@@ -17,24 +17,20 @@ export function AuthProvider({ children }) {
       const storedUser = localStorage.getItem('user');
       const storedToken = localStorage.getItem('token');
       
-      if (storedUser) {
+      if (storedUser && storedToken) {
         setCurrentUser(JSON.parse(storedUser));
-      }
-      
-      if (storedToken) {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${storedToken}`
-          }
-        });
         
-        if (response.data.user) {
+        // Verify token is still valid
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`);
+        
+        if (response.data.success && response.data.user) {
           setCurrentUser(response.data.user);
           localStorage.setItem('user', JSON.stringify(response.data.user));
         }
       }
     } catch (err) {
+      console.error('Auth check failed:', err);
+      // Clear invalid auth data
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       setCurrentUser(null);
@@ -62,12 +58,17 @@ export function AuthProvider({ children }) {
         if (response.data.user.type !== role) {
           throw new Error(`Invalid role. You are registered as a ${response.data.user.type}`);
         }
+        
+        // Store user data
         setCurrentUser(response.data.user);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
-        // Store JWT token if provided
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        // Store JWT token - check both possible response fields
+        const token = response.data.token || response.data.accessToken;
+        if (token) {
+          localStorage.setItem('token', token);
+        } else {
+          console.warn('No token received in login response');
         }
         
         return response.data.user;
