@@ -4,7 +4,7 @@
 # 🏠 MERN House Rental App (RentBridge)
 
 ## 🌐 Live Application
-🚀 **Frontend**: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)  
+🚀 **Frontend**: [https://rent-bridge-house-rental-app.vercel.app](https://rent-bridge-house-rental-app.vercel.app)  
 🔧 **Backend API**: [https://rentbridge-backend.onrender.com](https://rentbridge-backend.onrender.com)
 
 ## 📌 Project Overview
@@ -187,7 +187,7 @@ RentBridge_Final/
 ## ⚙️ Installation & Setup
 
 ### 🌐 **Access Live Application**
-Visit the live application: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)
+Visit the live application: [https://rent-bridge-house-rental-app.vercel.app](https://rent-bridge-house-rental-app.vercel.app)
 
 ### 💻 **Local Development Setup**
 1. **Clone the repository**
@@ -250,7 +250,7 @@ npm run dev
 ## 🧪 Testing
 
 ### **Live Application Testing**
-Test all features on the live application: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)
+Test all features on the live application: [https://rent-bridge-house-rental-app.vercel.app](https://rent-bridge-house-rental-app.vercel.app)
 
 ### **API Testing**
 - **Backend Health**: [https://rentbridge-backend.onrender.com/api/health](https://rentbridge-backend.onrender.com/api/health)
@@ -307,7 +307,7 @@ This project is licensed under the **MIT License** – feel free to use and modi
 
 For queries, reach out to: **[vedamehar@gmail.com](mailto:vedamehar@gmail.com)**
 
-**Live Application**: [https://rent-bridge-house-rental-app-e1vv.vercel.app](https://rent-bridge-house-rental-app-e1vv.vercel.app)  
+**Live Application**: [https://rent-bridge-house-rental-app.vercel.app](https://rent-bridge-house-rental-app.vercel.app)  
 **GitHub Repository**: [https://github.com/vedamehar/RentBridge_house-rental-app](https://github.com/vedamehar/RentBridge_house-rental-app)
 
 ```

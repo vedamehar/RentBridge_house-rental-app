@@ -18,7 +18,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://rent-bridge-house-rental-app-e1vv.vercel.app',
+  'https://rent-bridge-house-rental-app.vercel.app',
+  'https://rent-bridge-house-rental-app-e1vv.vercel.app', // Keep both for transition
   process.env.CORS_ORIGIN || 'https://your-app.vercel.app'
 ].filter(Boolean);
 
