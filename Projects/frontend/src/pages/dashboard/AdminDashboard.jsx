@@ -129,11 +129,16 @@ const AdminDashboard = () => {
 
   const fetchContacts = async () => {
     try {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         credentials: 'include'
       });
       const data = await response.json();
-      return data.data || [];
+      return data.data || data || [];
     } catch (error) {
       console.error('Error fetching contacts:', error);
       return [];
@@ -142,9 +147,11 @@ const AdminDashboard = () => {
 
   const handleUpdateContactStatus = async (id, status) => {
     try {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}/status`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}/status`, {
         method: 'PATCH',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         credentials: 'include',
@@ -164,8 +171,12 @@ const AdminDashboard = () => {
   const handleDeleteContact = async (id) => {
     if (window.confirm('Delete this contact message?')) {
       try {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}`, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           credentials: 'include'
         });
         

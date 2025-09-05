@@ -79,7 +79,7 @@ const adminService = {
           Authorization: `Bearer ${token}`
         }
       });
-      return response.data;
+      return response.data.data || response.data; // Extract data field
     } catch (error) {
       console.error('Error fetching bookings:', error);
       throw error;

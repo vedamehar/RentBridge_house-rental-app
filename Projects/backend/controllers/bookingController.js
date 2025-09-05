@@ -142,7 +142,7 @@ const createBooking = async (req, res) => {
       ownerId: property.userId._id,
       ownerName: property.userId.name || req.body.ownerName,
       propertyName: property.title || property.prop_address,
-      status: "confirmed"  // Direct confirmation
+      status: "approved"  // Direct approval instead of confirmed
     });
 
     await booking.save();
