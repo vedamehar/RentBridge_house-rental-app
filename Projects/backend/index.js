@@ -14,9 +14,15 @@ connectDB();
 const app = express();
 
 
-// Correct CORS config for frontend at localhost:5173
+// Correct CORS config for frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.CORS_ORIGIN || 'https://your-app.vercel.app'
+].filter(Boolean);
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -51,6 +57,16 @@ app.use('/api/bookings', bookings);
 app.use('/api/admin', admin);
 app.use('/api/messages', messages);
 app.use('/api/contact', contact);
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'RentBridge Backend is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
 
 // Single error middleware (removed duplicate)
 app.use((err, req, res, next) => {
