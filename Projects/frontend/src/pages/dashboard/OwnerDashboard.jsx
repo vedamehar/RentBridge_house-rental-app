@@ -18,7 +18,7 @@ const OwnerDashboard = () => {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const BASE_URL = 'http://localhost:5000';
+  const BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (currentUser === undefined || currentUser === null) return; // Wait for currentUser to load
@@ -386,7 +386,7 @@ const fetchProperties = async () => {
       };
 
       let response;
-      const baseUrl = 'http://localhost:5000';
+  const baseUrl = import.meta.env.VITE_API_URL;
       
       // Create payload matching backend expectations
       // AFTER

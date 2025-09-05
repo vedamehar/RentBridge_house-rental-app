@@ -41,8 +41,8 @@ const getValidImage = (img) => {
   } catch {
     return fallbackImage;
   }
-  if (img.startsWith("/uploads/")) return `http://localhost:5000${img}`;
-  if (img && !img.includes("/") && img.includes(".")) return `http://localhost:5000/uploads/${img}`;
+  if (img.startsWith("/uploads/")) return `${import.meta.env.VITE_API_URL}${img}`;
+  if (img && !img.includes("/") && img.includes(".")) return `${import.meta.env.VITE_API_URL}/uploads/${img}`;
   return fallbackImage;
 };
 
@@ -183,7 +183,7 @@ const RenterDashboard = () => {
         prop_images: (property.prop_images || []).map(img =>
           img.startsWith('data:image') || img.startsWith('http')
             ? img
-            : `http://localhost:5000/uploads/${img}`
+            : `${import.meta.env.VITE_API_URL}/uploads/${img}`
         )
       }));
       setProperties(processedProperties);

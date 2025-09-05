@@ -31,7 +31,7 @@ const ChatModal = ({ owner, onClose, propertyId }) => {
   const fetchMessages = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/messages/conversation/${owner._id}`,
+  `${import.meta.env.VITE_API_URL}/api/messages/conversation/${owner._id}`,
         { withCredentials: true }
       );
       setMessages(response.data.messages || []);
@@ -49,7 +49,7 @@ const ChatModal = ({ owner, onClose, propertyId }) => {
     setSending(true);
     try {
       await axios.post(
-        'http://localhost:5000/api/messages',
+  `${import.meta.env.VITE_API_URL}/api/messages`,
         {
           receiverId: owner._id,
           content: msg.trim(),

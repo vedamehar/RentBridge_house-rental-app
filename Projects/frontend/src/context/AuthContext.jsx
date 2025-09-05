@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
         setCurrentUser(JSON.parse(storedUser));
       }
       
-      const response = await axios.get('http://localhost:5000/api/users/me', {
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
         withCredentials: true
       });
       
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/users/login',
+  `${import.meta.env.VITE_API_URL}/api/users/login`,
         { email, password, role },
         { 
           withCredentials: true,

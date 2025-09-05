@@ -33,12 +33,12 @@ const Profile = () => {
   const fetchUserData = async () => {
     try {
       if (currentUser?.type === 'owner') {
-        const propertiesRes = await axios.get('http://localhost:5000/api/properties/owner', {
+  const propertiesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties/owner`, {
           withCredentials: true
         });
         setProperties(propertiesRes.data.properties);
       } else if (currentUser?.type === 'renter') {
-        const bookingsRes = await axios.get('http://localhost:5000/api/bookings/my-bookings', {
+  const bookingsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings/my-bookings`, {
           withCredentials: true
         });
         setBookings(bookingsRes.data.bookings);
@@ -61,7 +61,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       await axios.put(
-        'http://localhost:5000/api/users/update-profile',
+  `${import.meta.env.VITE_API_URL}/api/users/update-profile`,
         profileData,
         { withCredentials: true }
       );

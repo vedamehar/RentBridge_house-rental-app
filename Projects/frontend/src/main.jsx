@@ -7,7 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 
 // In main.jsx or similar entry file
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 ReactDOM.createRoot(document.getElementById('root')).render(

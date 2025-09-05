@@ -30,7 +30,7 @@ const DetailedProperty = () => {
   const fetchProperty = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/properties/${id}`,
+  `${import.meta.env.VITE_API_URL}/api/properties/${id}`,
         { withCredentials: true }
       );
       setProperty(response.data.property);
@@ -44,7 +44,7 @@ const DetailedProperty = () => {
   const handleBooking = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/properties/${id}/book`,
+  `${import.meta.env.VITE_API_URL}/api/properties/${id}/book`,
         {},
         { withCredentials: true }
       );

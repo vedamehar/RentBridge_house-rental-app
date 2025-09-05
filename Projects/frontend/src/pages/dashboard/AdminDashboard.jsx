@@ -114,7 +114,7 @@ const AdminDashboard = () => {
 
   const fetchContacts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
 
   const handleUpdateContactStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/contact/${id}/status`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ const AdminDashboard = () => {
   const handleDeleteContact = async (id) => {
     if (window.confirm('Delete this contact message?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/contact/${id}`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact/${id}`, {
           method: 'DELETE',
           credentials: 'include'
         });
