@@ -39,7 +39,7 @@ const addMessage = async (req, res) => {
 // In bookingController.js
 const requestBooking = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const property = await Property.findById(req.body.propertyId).populate('userId');
     if (!property) {
       return res.status(404).json({ 
         success: false,
@@ -54,10 +54,28 @@ const requestBooking = async (req, res) => {
       });
     }
 
-    // Create booking
+    // Check if user already has a booking for this property
+    const existingBooking = await Booking.findOne({
+      propertyId: req.body.propertyId,
+      userId: req.user._id,
+      status: { $in: ['pending', 'approved'] }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        success: false,
+        message: 'You already have a booking for this property'
+      });
+    }
+
+    // Create booking with auto-populated fields
     const booking = new Booking({
       ...req.body,
-      ownerId: property.userId,
+      bookingId: `BK${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+      userId: req.user._id,
+      userName: req.user.name || req.body.userName,
+      ownerId: property.userId._id,
+      ownerName: property.userId.name || req.body.ownerName,
       propertyName: property.title || property.prop_address,
       status: "pending"
     });

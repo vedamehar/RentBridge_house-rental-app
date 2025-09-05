@@ -1,4 +1,3 @@
-// middlewares/roleMiddleware.js
 const User = require('../Schemas/user');
 
 /**

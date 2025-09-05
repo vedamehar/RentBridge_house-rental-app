@@ -38,15 +38,19 @@ app.use(express.urlencoded({ extended: true })); // Add this for form data
 
 // Route files
 const users = require('./routes/UserRoutes');
-const properties = require('./routes/propertyRoutes');
-const bookings = require('./routes/bookingRoute');
+const properties = require('./routes/PropertyRoutes');
+const bookings = require('./routes/BookingRoute');
 const admin = require('./routes/adminRoutes');
+const messages = require('./routes/messageRoutes');
+const contact = require('./routes/contactRoutes');
 
 // Mount routers
 app.use('/api/users', users);
 app.use('/api/properties', properties);
 app.use('/api/bookings', bookings);
 app.use('/api/admin', admin);
+app.use('/api/messages', messages);
+app.use('/api/contact', contact);
 
 // Single error middleware (removed duplicate)
 app.use((err, req, res, next) => {

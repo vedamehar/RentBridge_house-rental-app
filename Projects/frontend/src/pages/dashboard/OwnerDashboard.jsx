@@ -12,6 +12,10 @@ const OwnerDashboard = () => {
   const [activeTab, setActiveTab] = useState("properties");
   const [bookings, setBookings] = useState([]);
   const [properties, setProperties] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const BASE_URL = 'http://localhost:5000';
@@ -240,8 +244,60 @@ const fetchProperties = async () => {
 
     if (activeTab === 'bookings') {
       fetchBookings();
+    } else if (activeTab === 'messages') {
+      fetchConversations();
     }
   }, [activeTab]);
+
+  const fetchConversations = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(`${BASE_URL}/api/messages/conversations`, {
+        withCredentials: true
+      });
+      setConversations(response.data.conversations || []);
+    } catch (err) {
+      console.error('Error fetching conversations:', err);
+      setConversations([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchMessages = async (userId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/messages/conversation/${userId}`, {
+        withCredentials: true
+      });
+      setMessages(response.data.messages || []);
+    } catch (err) {
+      console.error('Error fetching messages:', err);
+      setMessages([]);
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedConversation) return;
+
+    try {
+      await axios.post(`${BASE_URL}/api/messages`, {
+        receiverId: selectedConversation.otherUser._id,
+        content: newMessage.trim()
+      }, { withCredentials: true });
+
+      setNewMessage('');
+      fetchMessages(selectedConversation.otherUser._id);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      alert('Failed to send message');
+    }
+  };
+
+  const selectConversation = (conversation) => {
+    setSelectedConversation(conversation);
+    fetchMessages(conversation.otherUser._id);
+  };
 
   const handleShow = () => {
     console.log('handleShow called');
@@ -798,6 +854,118 @@ const getValidImage = (img) => {
         </div>
       )}
      </div>
+    </Tab>
+
+    <Tab eventKey="messages" title="💬 Messages">
+      <div className="mt-4">
+        {isLoading ? (
+          <div className="text-center py-5">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading messages...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <div className="row">
+            {/* Conversations List */}
+            <div className="col-md-4">
+              <Card>
+                <Card.Header>
+                  <h5 className="mb-0">Conversations</h5>
+                </Card.Header>
+                <Card.Body style={{ maxHeight: '400px', overflowY: 'auto', padding: '0' }}>
+                  {conversations.length > 0 ? conversations.map((conversation) => (
+                    <div
+                      key={conversation._id}
+                      className={`p-3 border-bottom cursor-pointer ${selectedConversation?._id === conversation._id ? 'bg-light' : ''}`}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => selectConversation(conversation)}
+                    >
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div>
+                          <strong>{conversation.otherUser.name}</strong>
+                          {conversation.unreadCount > 0 && (
+                            <Badge bg="primary" className="ms-2">{conversation.unreadCount}</Badge>
+                          )}
+                          <div className="text-muted small">
+                            {conversation.lastMessage.content.length > 50 
+                              ? conversation.lastMessage.content.substring(0, 50) + '...'
+                              : conversation.lastMessage.content
+                            }
+                          </div>
+                        </div>
+                        <small className="text-muted">
+                          {new Date(conversation.lastMessage.createdAt).toLocaleDateString()}
+                        </small>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="text-center py-4 text-muted">
+                      No conversations yet
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
+
+            {/* Message Thread */}
+            <div className="col-md-8">
+              {selectedConversation ? (
+                <Card>
+                  <Card.Header>
+                    <h5 className="mb-0">Chat with {selectedConversation.otherUser.name}</h5>
+                  </Card.Header>
+                  <Card.Body>
+                    <div style={{ height: '300px', overflowY: 'auto', marginBottom: '10px' }} className="border rounded p-2">
+                      {messages.length > 0 ? messages.map((message) => {
+                        const isFromCurrentUser = message.senderId._id === currentUser?._id || message.senderId === currentUser?._id;
+                        return (
+                          <div key={message._id} className={`mb-2 ${isFromCurrentUser ? 'text-end' : ''}`}>
+                            <div className={`d-inline-block p-2 rounded ${
+                              isFromCurrentUser 
+                                ? 'bg-primary text-white' 
+                                : 'bg-light'
+                            }`} style={{ maxWidth: '70%' }}>
+                              <div>{message.content}</div>
+                              <small className={`d-block mt-1 ${isFromCurrentUser ? 'text-light' : 'text-muted'}`}>
+                                {message.senderName} • {new Date(message.createdAt).toLocaleTimeString()}
+                              </small>
+                            </div>
+                          </div>
+                        );
+                      }) : (
+                        <div className="text-center text-muted py-3">
+                          No messages yet
+                        </div>
+                      )}
+                    </div>
+                    <Form onSubmit={sendMessage} className="d-flex gap-2">
+                      <Form.Control
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type your message..."
+                        style={{ flex: 1 }}
+                      />
+                      <Button 
+                        variant="primary" 
+                        type="submit"
+                        disabled={newMessage.trim() === ''}
+                      >
+                        Send
+                      </Button>
+                    </Form>
+                  </Card.Body>
+                </Card>
+              ) : (
+                <Card>
+                  <Card.Body className="text-center py-5 text-muted">
+                    Select a conversation to start chatting
+                  </Card.Body>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </Tab>
   </Tabs>
 

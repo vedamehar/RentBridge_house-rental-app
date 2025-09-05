@@ -24,7 +24,6 @@ import FancyNavbar from './components/FancyNavbar';
 import FancyFooter from './components/FancyFooter';
 
 import './App.css';
-import './assets/app.css';
 
 const AppContent = () => {
   const { currentUser, loading } = useAuth();

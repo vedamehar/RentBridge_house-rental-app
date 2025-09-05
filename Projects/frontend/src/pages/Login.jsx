@@ -15,7 +15,7 @@ import {
   FormLabel
 } from "@mui/material";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../assets/login.css";
+import "../assets/styles/login.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({

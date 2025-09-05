@@ -6,6 +6,7 @@ import ChatModal from "../../components/ChatModal";
 import Wishlist from "../../components/Wishlist";
 import ReviewStars from "../../components/ReviewStars";
 import { useAuth } from '../../context/AuthContext';
+import bookingService from '../../services/bookingService'; // Import booking service
 import "./RenterDashboard.css";
 
 const fallbackImage = "/no-image.png";
@@ -144,10 +145,7 @@ const RenterDashboard = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState([]);
-  const [bookedProperties, setBookedProperties] = useState(() => {
-    const saved = localStorage.getItem('bookedProperties');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [bookedProperties, setBookedProperties] = useState([]);
   const [error, setError] = useState(null);
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
@@ -166,11 +164,11 @@ const RenterDashboard = () => {
   const fetchBookedProperties = useCallback(async () => {
     if (!currentUser?._id) return;
     try {
-      const response = await propertyService.getBookedProperties(currentUser._id);
-      const bookingsData = response.data || response || [];
+      const bookingsData = await bookingService.getBookingsForUser(currentUser._id);
       setBookedProperties(Array.isArray(bookingsData) ? bookingsData : []);
     } catch (error) {
       console.error('Error fetching booked properties:', error);
+      setError('Failed to load your bookings.');
       setBookedProperties([]);
     }
   }, [currentUser]);
@@ -253,28 +251,31 @@ const RenterDashboard = () => {
       navigate('/login');
       return;
     }
-    const property = properties.find(p => p._id === propertyId);
-    if (!property) {
-      setError('Property not found');
-      return;
+
+    try {
+      const bookingData = {
+        propertyId: propertyId,
+        userId: currentUser._id,
+        userName: currentUser.name,
+        ownerId: selectedProperty.userId._id,
+        ownerName: selectedProperty.userId.name,
+        propertyName: selectedProperty.title || selectedProperty.prop_address,
+        startDate: new Date().toISOString(),
+        // Example: booking for 1 month
+        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+      };
+
+      const newBooking = await bookingService.createBooking(bookingData);
+
+      // Update state and give feedback
+      setBookedProperties(prev => [...prev, newBooking]);
+      alert('Property booked successfully!');
+      setShowModal(false);
+      fetchBookedProperties(); // Re-fetch bookings to be sure
+    } catch (err) {
+      console.error('Booking failed:', err);
+      setError(err.message || 'Failed to book property. It might already be booked.');
     }
-    if (bookedProperties.some(booking => booking.propertyId._id === propertyId)) {
-      setError('You have already booked this property');
-      return;
-    }
-    const newBooking = {
-      _id: Date.now().toString(),
-      propertyId: property,
-      startDate: new Date().toISOString(),
-      endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
-      status: 'confirmed',
-      bookingDate: new Date().toISOString()
-    };
-    const updatedBookings = [...bookedProperties, newBooking];
-    setBookedProperties(updatedBookings);
-    localStorage.setItem('bookedProperties', JSON.stringify(updatedBookings));
-    alert(`Successfully booked ${property.title || property.prop_address}!`);
-    setShowModal(false);
   };
 
   return (
@@ -363,7 +364,7 @@ const RenterDashboard = () => {
                         <Card.Body>
                           <Card.Title>{booking.propertyId?.title || 'Unknown Property'}</Card.Title>
                           <Card.Text>
-                            <Badge bg="success">Booked</Badge><br/>
+                            <Badge bg="success">{booking.status || 'Booked'}</Badge><br/>
                             <small>From: {new Date(booking.startDate).toLocaleDateString()}</small><br/>
                             <small>To: {new Date(booking.endDate).toLocaleDateString()}</small>
                           </Card.Text>
@@ -371,11 +372,8 @@ const RenterDashboard = () => {
                             variant="outline-danger"
                             size="sm"
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to cancel this booking?')) {
-                                const updatedBookings = bookedProperties.filter(b => b._id !== booking._id);
-                                setBookedProperties(updatedBookings);
-                                localStorage.setItem('bookedProperties', JSON.stringify(updatedBookings));
-                              }
+                              alert("Cancellation feature not yet implemented.");
+                              // To implement: call a cancel booking service here
                             }}
                           >
                             Cancel Booking
@@ -426,9 +424,9 @@ const RenterDashboard = () => {
                   <Button
                     variant="success"
                     onClick={() => handleBook(selectedProperty._id)}
-                    disabled={bookedProperties.some(b => b.propertyId._id === selectedProperty._id)}
+                    disabled={bookedProperties.some(b => b.propertyId?._id === selectedProperty._id)}
                   >
-                    {bookedProperties.some(b => b.propertyId._id === selectedProperty._id) ? "Booked" : "Book Now"}
+                    {bookedProperties.some(b => b.propertyId?._id === selectedProperty._id) ? "Booked" : "Book Now"}
                   </Button>
                   <Button variant="secondary" onClick={() => setChatOpen(true)}>Chat with Owner</Button>
                   <Button
@@ -449,6 +447,7 @@ const RenterDashboard = () => {
       {chatOpen && selectedProperty && (
         <ChatModal
           owner={selectedProperty.userId || { name: 'Property Owner' }}
+          propertyId={selectedProperty._id}
           onClose={() => setChatOpen(false)}
         />
       )}

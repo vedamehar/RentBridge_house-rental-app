@@ -3,7 +3,7 @@ import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../assets/signup.css';
+import '../assets/styles/signup.css';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({

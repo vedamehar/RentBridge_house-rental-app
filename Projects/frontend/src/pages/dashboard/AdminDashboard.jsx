@@ -11,13 +11,15 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [search, setSearch] = useState('');
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [loading, setLoading] = useState({
     stats: true,
     users: true,
     properties: true,
-    bookings: true
+    bookings: true,
+    contacts: true
   });
   const [summary, setSummary] = useState({
     owners: 0,
@@ -51,6 +53,11 @@ const AdminDashboard = () => {
         const bookingsData = await adminService.getAllBookings();
         setBookings(bookingsData);
         setLoading(prev => ({ ...prev, bookings: false }));
+
+        // Fetch contact messages
+        const contactsData = await fetchContacts();
+        setContacts(contactsData);
+        setLoading(prev => ({ ...prev, contacts: false }));
       } catch (error) {
         console.error('Error fetching data:', error);
         // Handle error (show toast/alert)
@@ -101,6 +108,57 @@ const AdminDashboard = () => {
         setSummary(prev => ({ ...prev, bookings: prev.bookings - 1 }));
       } catch (error) {
         console.error('Error cancelling booking:', error);
+      }
+    }
+  };
+
+  const fetchContacts = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+      return [];
+    }
+  };
+
+  const handleUpdateContactStatus = async (id, status) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/contact/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status })
+      });
+      
+      if (response.ok) {
+        setContacts(prev => prev.map(contact => 
+          contact._id === id ? { ...contact, status } : contact
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating contact status:', error);
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    if (window.confirm('Delete this contact message?')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/contact/${id}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          setContacts(prev => prev.filter(contact => contact._id !== id));
+        }
+      } catch (error) {
+        console.error('Error deleting contact:', error);
       }
     }
   };
@@ -263,6 +321,76 @@ const AdminDashboard = () => {
                 ))}
               </tbody>
             </Table>
+          )}
+        </Card.Body>
+      </Card>
+
+      {/* Contact Messages Table */}
+      <Card className="mb-4">
+        <Card.Header>📧 Contact Messages</Card.Header>
+        <Card.Body>
+          {loading.contacts ? (
+            <div className="text-center"><Spinner animation="border" /></div>
+          ) : (
+            <Table striped bordered hover className="admin-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contacts.map(contact => (
+                  <tr key={contact._id}>
+                    <td>{new Date(contact.createdAt).toLocaleDateString()}</td>
+                    <td>{contact.name}</td>
+                    <td>{contact.email}</td>
+                    <td>{contact.subject}</td>
+                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {contact.message.length > 50 ? contact.message.substring(0, 50) + '...' : contact.message}
+                    </td>
+                    <td>
+                      <Form.Select 
+                        size="sm" 
+                        value={contact.status}
+                        onChange={(e) => handleUpdateContactStatus(contact._id, e.target.value)}
+                      >
+                        <option value="new">New</option>
+                        <option value="read">Read</option>
+                        <option value="replied">Replied</option>
+                      </Form.Select>
+                    </td>
+                    <td>
+                      <Button 
+                        variant="outline-info" 
+                        size="sm" 
+                        className="me-2"
+                        onClick={() => alert(`Full Message:\n\n${contact.message}`)}
+                      >
+                        View
+                      </Button>
+                      <Button 
+                        variant="outline-danger" 
+                        size="sm" 
+                        onClick={() => handleDeleteContact(contact._id)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+          {contacts.length === 0 && !loading.contacts && (
+            <div className="text-center py-4 text-muted">
+              No contact messages yet
+            </div>
           )}
         </Card.Body>
       </Card>

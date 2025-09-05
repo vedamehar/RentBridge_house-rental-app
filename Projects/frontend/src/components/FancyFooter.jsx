@@ -26,7 +26,7 @@ const FancyFooter = () => {
             <h5 className="text-uppercase mb-4 font-weight-bold text-warning">Contact</h5>
             <p><i className="bi bi-house-door me-2"></i> Pune, Maharashtra, India</p>
             <p><i className="bi bi-envelope me-2"></i> support@rentbridge.com</p>
-            <p><i className="bi bi-phone me-2"></i> +91 9689814154</p>
+            <p><i className="bi bi-phone me-2"></i> +91 1234567890</p>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Button, Container, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../assets/contact.css';
+import '../assets/styles/contact.css';
 
 const ContactPage = () => (
   <div className="contact-bg">
