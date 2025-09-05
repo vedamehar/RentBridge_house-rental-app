@@ -41,22 +41,22 @@ const AdminDashboard = () => {
 
         // Fetch users
         const usersData = await adminService.getAllUsers();
-        setUsers(usersData);
+        setUsers(Array.isArray(usersData) ? usersData : []);
         setLoading(prev => ({ ...prev, users: false }));
 
         // Fetch properties
         const propertiesData = await adminService.getAllProperties();
-        setProperties(propertiesData);
+        setProperties(Array.isArray(propertiesData) ? propertiesData : []);
         setLoading(prev => ({ ...prev, properties: false }));
 
         // Fetch bookings
         const bookingsData = await adminService.getAllBookings();
-        setBookings(bookingsData);
+        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
         setLoading(prev => ({ ...prev, bookings: false }));
 
         // Fetch contact messages
         const contactsData = await fetchContacts();
-        setContacts(contactsData);
+        setContacts(Array.isArray(contactsData) ? contactsData : []);
         setLoading(prev => ({ ...prev, contacts: false }));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -163,10 +163,10 @@ const AdminDashboard = () => {
     }
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(search.toLowerCase()) ||
-    user.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = Array.isArray(users) ? users.filter(user =>
+    user.name?.toLowerCase().includes(search.toLowerCase()) ||
+    user.email?.toLowerCase().includes(search.toLowerCase())
+  ) : [];
 
   return (
     <>
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
                 <tr><th>ID</th><th>Title</th><th>Location</th><th>Rent</th><th>Owner</th><th>Action</th></tr>
               </thead>
               <tbody>
-                {properties.map(prop => (
+                {Array.isArray(properties) && properties.map(prop => (
                   <tr key={prop._id}>
                     <td>{prop._id}</td>
                     <td>{prop.title || prop.prop_address}</td>
@@ -310,7 +310,7 @@ const AdminDashboard = () => {
                 <tr><th>ID</th><th>Renter</th><th>Property</th><th>Status</th><th>Action</th></tr>
               </thead>
               <tbody>
-                {bookings.map(b => (
+                {Array.isArray(bookings) && bookings.map(b => (
                   <tr key={b._id}>
                     <td>{b._id}</td>
                     <td>{b.userId?.name}</td>
@@ -345,7 +345,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {contacts.map(contact => (
+                {Array.isArray(contacts) && contacts.map(contact => (
                   <tr key={contact._id}>
                     <td>{new Date(contact.createdAt).toLocaleDateString()}</td>
                     <td>{contact.name}</td>

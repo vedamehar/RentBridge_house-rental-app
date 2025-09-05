@@ -137,23 +137,32 @@ const fetchProperties = async () => {
     console.log('Current user:', currentUser); // Debug log
     
     // Handle backend response format for properties
-    let allProperties;
+    let allProperties = [];
     if (Array.isArray(response.data)) {
       allProperties = response.data;
-    } else if (response.data.properties) {
+    } else if (response.data && Array.isArray(response.data.properties)) {
       allProperties = response.data.properties;
-    } else if (response.data.data) {
+    } else if (response.data && Array.isArray(response.data.data)) {
       allProperties = response.data.data;
     } else {
+      console.warn('Unexpected properties response format:', response.data);
+      allProperties = [];
+    }
+    
+    // Ensure allProperties is always an array
+    if (!Array.isArray(allProperties)) {
+      console.error('allProperties is not an array:', allProperties);
       allProperties = [];
     }
     
     // Filter properties for current user
     const propertiesArray = allProperties.filter(prop => 
-      prop.owner === currentUser._id || 
-      prop.userId === currentUser._id ||
-      prop.owner === currentUser.id ||
-      prop.userId === currentUser.id
+      prop && (
+        prop.owner === currentUser._id || 
+        prop.userId === currentUser._id ||
+        prop.owner === currentUser.id ||
+        prop.userId === currentUser.id
+      )
     );
     
     console.log('Filtered properties for user:', propertiesArray);
@@ -230,11 +239,27 @@ const fetchProperties = async () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setBookings(response.data.bookings || []);
+        
+        console.log('Bookings response:', response.data); // Debug log
+        
+        // Handle response format
+        let bookingsData = [];
+        if (Array.isArray(response.data)) {
+          bookingsData = response.data;
+        } else if (response.data && Array.isArray(response.data.bookings)) {
+          bookingsData = response.data.bookings;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          bookingsData = response.data.data;
+        } else {
+          console.warn('Unexpected bookings response format:', response.data);
+          bookingsData = [];
+        }
+        
+        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
       } catch (err) {
         console.error('Error fetching bookings:', err);
         setBookings([]);
-      if (err.response?.status === 401) {
+        if (err.response?.status === 401) {
           navigate('/login');
         }
       } finally {
@@ -714,7 +739,7 @@ const getValidImage = (img) => {
                   <span className="visually-hidden">Loading properties...</span>
                 </Spinner>
               </div>
-            ) : properties.length > 0 ? (
+            ) : Array.isArray(properties) && properties.length > 0 ? (
               <div className="row g-4">
                 {properties.map((property) => (
                   <div className="col-lg-4 col-md-6 mb-4" key={property._id}>
@@ -798,7 +823,7 @@ const getValidImage = (img) => {
                   <span className="visually-hidden">Loading bookings...</span>
                 </Spinner>
               </div>
-            ) : bookings.length > 0 ? 
+            ) : Array.isArray(bookings) && bookings.length > 0 ? 
             bookings.map((booking) => (
   <Card key={booking._id} className="mb-3 shadow">
     <Card.Body>
