@@ -15,20 +15,28 @@ export function AuthProvider({ children }) {
   const checkAuth = async () => {
     try {
       const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+      
       if (storedUser) {
         setCurrentUser(JSON.parse(storedUser));
       }
       
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-        withCredentials: true
-      });
-      
-      if (response.data.user) {
-        setCurrentUser(response.data.user);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+      if (storedToken) {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${storedToken}`
+          }
+        });
+        
+        if (response.data.user) {
+          setCurrentUser(response.data.user);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
       }
     } catch (err) {
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
       setCurrentUser(null);
     } finally {
       setLoading(false);
@@ -56,6 +64,12 @@ export function AuthProvider({ children }) {
         }
         setCurrentUser(response.data.user);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        // Store JWT token if provided
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+        }
+        
         return response.data.user;
       } else {
         throw new Error(response.data.message || 'Login failed');
@@ -69,7 +83,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/users/logout', {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/users/logout`, {}, { withCredentials: true });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
