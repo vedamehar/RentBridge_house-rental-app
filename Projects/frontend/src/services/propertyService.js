@@ -197,6 +197,22 @@ const propertyService = {
       });
       throw error;
     }
+  },
+
+  // Update property status (available, booked, etc.)
+  updatePropertyStatus: async (propertyId, status) => {
+    try {
+      const response = await axios.patch(`${BASE_URL}/properties/${propertyId}/status`, {
+        status
+      }, {
+        headers: getAuthHeader(),
+        withCredentials: true
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating property status:', error);
+      throw error;
+    }
   }
 };
 

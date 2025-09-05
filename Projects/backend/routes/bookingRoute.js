@@ -6,7 +6,8 @@ const { auth, authRole } = require("../middlewares/auth");
 router.use(auth);
 
 // Define routes
-router.post("/", bookingController.requestBooking);
+router.post("/", bookingController.createBooking);       // Direct booking creation
+router.post("/request", bookingController.requestBooking); // Booking request (needs approval)
 router.get("/", auth, authRole('admin'), bookingController.getAllBookings); // Admin route for all bookings
 router.get("/user/:userId", bookingController.getUserBookings);
 router.get("/owner", bookingController.getOwnerBookings);

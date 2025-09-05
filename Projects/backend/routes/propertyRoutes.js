@@ -11,6 +11,7 @@ router.post('/', auth, propertyController.addProperty); // Protected POST for ad
 // Parameterized routes come AFTER specific routes
 router.get('/:id', propertyController.getPropertyById);
 router.put('/:id', auth, propertyController.updateProperty);
+router.patch('/:id/status', auth, propertyController.updatePropertyStatus);
 router.delete('/:id', auth, propertyController.deleteProperty);
 router.post('/:id/book', auth, propertyController.requestBooking);
 router.put('/:propertyId/bookings/:requestId', auth, propertyController.updateBookingStatus);

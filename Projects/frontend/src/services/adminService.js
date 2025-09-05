@@ -9,16 +9,20 @@ const adminService = {
           Authorization: `Bearer ${token}`
         }
       });
-      return response.data;
+      return response.data.data; // Extract the data field from the response
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       throw error;
     }
   },
 
-  getAllUsers: async () => {
+  getAllUsers: async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/users`);
+      const response = await axios.get(`${BASE_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -26,9 +30,13 @@ const adminService = {
     }
   },
 
-  deleteUser: async (userId) => {
+  deleteUser: async (userId, token) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/users/${userId}`);
+      const response = await axios.delete(`${BASE_URL}/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -36,9 +44,13 @@ const adminService = {
     }
   },
 
-  getAllProperties: async () => {
+  getAllProperties: async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/properties`);
+      const response = await axios.get(`${BASE_URL}/properties`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching properties:', error);
@@ -46,9 +58,13 @@ const adminService = {
     }
   },
 
-  deleteProperty: async (propertyId) => {
+  deleteProperty: async (propertyId, token) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/properties/${propertyId}`);
+      const response = await axios.delete(`${BASE_URL}/properties/${propertyId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error deleting property:', error);
@@ -56,9 +72,13 @@ const adminService = {
     }
   },
 
-  getAllBookings: async () => {
+  getAllBookings: async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/bookings`);
+      const response = await axios.get(`${BASE_URL}/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -66,9 +86,13 @@ const adminService = {
     }
   },
 
-  cancelBooking: async (bookingId) => {
+  cancelBooking: async (bookingId, token) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/bookings/${bookingId}`);
+      const response = await axios.delete(`${BASE_URL}/bookings/${bookingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error cancelling booking:', error);

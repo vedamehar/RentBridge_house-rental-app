@@ -34,23 +34,35 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+        console.log('Admin token:', token ? 'Token exists' : 'No token found');
+        
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+        
         // Fetch dashboard stats
-        const stats = await adminService.getDashboardStats();
-        setSummary(stats);
+        console.log('Fetching dashboard stats...');
+        const stats = await adminService.getDashboardStats(token);
+        console.log('Dashboard stats response:', stats);
+        setSummary(stats || {});
         setLoading(prev => ({ ...prev, stats: false }));
 
         // Fetch users
-        const usersData = await adminService.getAllUsers();
+        console.log('Fetching users...');
+        const usersData = await adminService.getAllUsers(token);
+        console.log('Users data:', usersData);
         setUsers(Array.isArray(usersData) ? usersData : []);
         setLoading(prev => ({ ...prev, users: false }));
 
         // Fetch properties
-        const propertiesData = await adminService.getAllProperties();
+        const propertiesData = await adminService.getAllProperties(token);
         setProperties(Array.isArray(propertiesData) ? propertiesData : []);
         setLoading(prev => ({ ...prev, properties: false }));
 
         // Fetch bookings
-        const bookingsData = await adminService.getAllBookings();
+        const bookingsData = await adminService.getAllBookings(token);
         setBookings(Array.isArray(bookingsData) ? bookingsData : []);
         setLoading(prev => ({ ...prev, bookings: false }));
 
@@ -75,7 +87,8 @@ const AdminDashboard = () => {
   const handleRemoveUser = async (id) => {
     if (window.confirm('Remove this user?')) {
       try {
-        await adminService.deleteUser(id);
+        const token = localStorage.getItem('token');
+        await adminService.deleteUser(id, token);
         setUsers(prev => prev.filter(user => user._id !== id));
         setSummary(prev => ({
           ...prev,
@@ -91,7 +104,8 @@ const AdminDashboard = () => {
   const handleRemoveProperty = async (id) => {
     if (window.confirm('Remove this property?')) {
       try {
-        await adminService.deleteProperty(id);
+        const token = localStorage.getItem('token');
+        await adminService.deleteProperty(id, token);
         setProperties(prev => prev.filter(prop => prop._id !== id));
         setSummary(prev => ({ ...prev, properties: prev.properties - 1 }));
       } catch (error) {
@@ -103,7 +117,8 @@ const AdminDashboard = () => {
   const handleCancelBooking = async (id) => {
     if (window.confirm('Cancel this booking?')) {
       try {
-        await adminService.cancelBooking(id);
+        const token = localStorage.getItem('token');
+        await adminService.cancelBooking(id, token);
         setBookings(prev => prev.filter(booking => booking._id !== id));
         setSummary(prev => ({ ...prev, bookings: prev.bookings - 1 }));
       } catch (error) {

@@ -101,6 +101,71 @@ const requestBooking = async (req, res) => {
   }
 };
 
+// Direct booking creation (for confirmed bookings without approval process)
+const createBooking = async (req, res) => {
+  try {
+    const property = await Property.findById(req.body.propertyId).populate('userId');
+    if (!property) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Property not found' 
+      });
+    }
+
+    if (property.status !== 'available') {
+      return res.status(400).json({
+        success: false,
+        message: 'Property is not available for booking'
+      });
+    }
+
+    // Check if user already has a booking for this property
+    const existingBooking = await Booking.findOne({
+      propertyId: req.body.propertyId,
+      userId: req.user._id,
+      status: { $in: ['pending', 'approved', 'confirmed'] }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        success: false,
+        message: 'You already have a booking for this property'
+      });
+    }
+
+    // Create confirmed booking
+    const booking = new Booking({
+      ...req.body,
+      bookingId: `BK${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+      userId: req.user._id,
+      userName: req.user.name || req.body.userName,
+      ownerId: property.userId._id,
+      ownerName: property.userId.name || req.body.ownerName,
+      propertyName: property.title || property.prop_address,
+      status: "confirmed"  // Direct confirmation
+    });
+
+    await booking.save();
+    
+    // Update property status to booked
+    property.status = 'booked';
+    await property.save();
+    
+    res.status(201).json({
+      success: true,
+      booking
+    });
+
+  } catch (err) {
+    console.error('Direct booking creation error:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to create booking',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+};
+
 const getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ ownerId: req.user._id })
@@ -199,6 +264,7 @@ const getAllBookings = async (req, res) => {
 
 module.exports = {
   getUserBookings,
+  createBooking,      // Added
   requestBooking,
   addMessage,
   getOwnerBookings,

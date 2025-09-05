@@ -522,6 +522,50 @@ const getUserFavorites = async (req, res) => {
   }
 };
 
+// Update property status (available, booked, pending, etc.)
+const updatePropertyStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    const validStatuses = ['available', 'booked', 'pending', 'maintenance'];
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    // Find and update property
+    const property = await Property.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Property status updated successfully",
+      property
+    });
+  } catch (err) {
+    console.error('Update property status error:', err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update property status",
+      error: err.message
+    });
+  }
+};
+
 // Add to exports
 module.exports = {
   getAllProperties,
@@ -535,6 +579,7 @@ module.exports = {
   requestBooking ,
   updateBookingStatus,
   toggleFavorite,
-  getUserFavorites  // ... other exports ...
+  getUserFavorites,  // ... other exports ...
+  updatePropertyStatus  // Added
 };
 

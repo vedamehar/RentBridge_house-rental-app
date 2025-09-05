@@ -253,6 +253,7 @@ const RenterDashboard = () => {
     }
 
     try {
+      setLoading(true);
       const bookingData = {
         propertyId: propertyId,
         userId: currentUser._id,
@@ -265,16 +266,47 @@ const RenterDashboard = () => {
         endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
       };
 
+      // Create the booking
       const newBooking = await bookingService.createBooking(bookingData);
 
-      // Update state and give feedback
+      // Update the property status to 'booked' using propertyService
+      try {
+        await propertyService.updatePropertyStatus(propertyId, 'booked');
+      } catch (statusError) {
+        console.warn('Failed to update property status:', statusError);
+        // Continue with booking even if status update fails
+      }
+
+      // Update local state immediately for better UX
+      // Remove from available properties
+      setProperties(prev => prev.filter(p => p._id !== propertyId));
+      setFilteredProperties(prev => prev.filter(p => p._id !== propertyId));
+      
+      // Add to booked properties
       setBookedProperties(prev => [...prev, newBooking]);
-      alert('Property booked successfully!');
+      
+      // Remove from wishlist if it's there
+      setWishlist(prev => prev.filter(id => id !== propertyId));
+      
+      alert('Property booked successfully! Check your "My Bookings" tab.');
       setShowModal(false);
-      fetchBookedProperties(); // Re-fetch bookings to be sure
+      
+      // Automatically switch to "My Bookings" tab after successful booking
+      setTimeout(() => {
+        const bookingsTab = document.querySelector('[data-rr-ui-event-key="booked"]');
+        if (bookingsTab) {
+          bookingsTab.click();
+        }
+      }, 1000);
+      
+      // Refresh data to ensure consistency
+      fetchProperties();
+      fetchBookedProperties();
     } catch (err) {
       console.error('Booking failed:', err);
       setError(err.message || 'Failed to book property. It might already be booked.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -424,9 +456,10 @@ const RenterDashboard = () => {
                   <Button
                     variant="success"
                     onClick={() => handleBook(selectedProperty._id)}
-                    disabled={bookedProperties.some(b => b.propertyId?._id === selectedProperty._id)}
+                    disabled={loading || bookedProperties.some(b => b.propertyId?._id === selectedProperty._id)}
                   >
-                    {bookedProperties.some(b => b.propertyId?._id === selectedProperty._id) ? "Booked" : "Book Now"}
+                    {loading ? 'Booking...' : 
+                     bookedProperties.some(b => b.propertyId?._id === selectedProperty._id) ? "Already Booked" : "Book Now"}
                   </Button>
                   <Button variant="secondary" onClick={() => setChatOpen(true)}>Chat with Owner</Button>
                   <Button

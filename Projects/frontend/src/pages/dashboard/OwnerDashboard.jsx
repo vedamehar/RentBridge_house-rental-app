@@ -438,6 +438,7 @@ const fetchProperties = async () => {
           },
           withCredentials: true
         });
+        alert('Property updated successfully!');
       } else {
         // Add new property
         response = await axios.post(`${baseUrl}/api/properties`, propertyData, {
@@ -446,7 +447,24 @@ const fetchProperties = async () => {
           },
           withCredentials: true
         });
+        alert('Property added successfully!');
       }
+      
+      // Reset form data
+      setNewProperty({
+        title: '',
+        prop_type: '',
+        prop_address: '',
+        location: {
+          city: '',
+          state: ''
+        },
+        owner_contact: '',
+        prop_amt: '',
+        prop_images: [],
+        ad_info: '',
+        status: 'available'
+      });
       
       // Refresh properties list
       await fetchProperties();
