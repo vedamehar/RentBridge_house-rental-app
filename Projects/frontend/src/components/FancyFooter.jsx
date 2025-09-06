@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./FancyFooter.css";
 
 const FancyFooter = () => {
@@ -16,10 +17,10 @@ const FancyFooter = () => {
 
           <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
             <h5 className="text-uppercase mb-4 font-weight-bold text-warning">Quick Links</h5>
-            <p><a href="#" className="text-white">Home</a></p>
-            <p><a href="#" className="text-white">Login</a></p>
-            <p><a href="#" className="text-white">Register</a></p>
-            <p><a href="#" className="text-white">Contact</a></p>
+            <p><Link to="/" className="text-white">Home</Link></p>
+            <p><Link to="/login" className="text-white">Login</Link></p>
+            <p><Link to="/register" className="text-white">Register</Link></p>
+            <p><Link to="/contact" className="text-white">Contact</Link></p>
           </div>
 
           <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
@@ -37,10 +38,10 @@ const FancyFooter = () => {
           </div>
           <div className="col-md-5 col-lg-4">
             <div className="text-center text-md-right">
-              <a href="#" className="text-white me-4"><i className="bi bi-facebook"></i></a>
-              <a href="#" className="text-white me-4"><i className="bi bi-instagram"></i></a>
-              <a href="#" className="text-white me-4"><i className="bi bi-linkedin"></i></a>
-              <a href="#" className="text-white me-4"><i className="bi bi-github"></i></a>
+              <a href="https://www.facebook.com/share/1ahp8Z1DZK/" className="text-white me-4"><i className="bi bi-facebook"></i></a>
+              <a href="https://www.instagram.com/vedamehar215/" className="text-white me-4"><i className="bi bi-instagram"></i></a>
+              <a href="https://www.linkedin.com/in/vedant-mehar-a49036330/" className="text-white me-4"><i className="bi bi-linkedin"></i></a>
+              <a href="https://github.com/vedamehar" className="text-white me-4"><i className="bi bi-github"></i></a>
             </div>
           </div>
         </div>
