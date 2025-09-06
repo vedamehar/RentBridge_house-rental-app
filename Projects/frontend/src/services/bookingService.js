@@ -22,7 +22,6 @@ const createBooking = async (bookingData) => {
 const getBookingsForUser = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      console.log('Fetching bookings for userId:', userId, 'with token:', token ? 'present' : 'missing');
       
       const response = await axios.get(`${API_URL}/user/${userId}`, { 
         withCredentials: true,
@@ -31,10 +30,7 @@ const getBookingsForUser = async (userId) => {
         }
       });
       
-      console.log('Raw booking response:', response.data);
       const bookings = response.data.bookings || response.data.data || response.data || [];
-      console.log('Extracted bookings:', bookings);
-      console.log('Number of bookings:', Array.isArray(bookings) ? bookings.length : 'Not an array');
       
       return bookings;
     } catch (error) {

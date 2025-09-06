@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Bookings = () => {
   return (
     <div className="container mt-4">

@@ -166,18 +166,12 @@ const RenterDashboard = () => {
 
   const fetchBookedProperties = useCallback(async () => {
     if (!currentUser?._id) {
-      console.log('No current user, skipping booking fetch');
       return;
     }
     try {
-      console.log('Starting fetchBookedProperties for user:', currentUser._id);
       const bookingsData = await bookingService.getBookingsForUser(currentUser._id);
-      console.log('fetchBookedProperties received data:', bookingsData);
-      console.log('Is array?', Array.isArray(bookingsData));
-      console.log('Length:', bookingsData?.length);
       
       const finalBookings = Array.isArray(bookingsData) ? bookingsData : [];
-      console.log('Setting bookedProperties to:', finalBookings);
       setBookedProperties(finalBookings);
     } catch (error) {
       console.error('Error fetching booked properties:', error);
@@ -211,9 +205,6 @@ const RenterDashboard = () => {
 
   // Debug useEffect to monitor bookedProperties changes
   useEffect(() => {
-    console.log('bookedProperties state changed:', bookedProperties);
-    console.log('bookedProperties length:', bookedProperties.length);
-    console.log('bookedProperties type:', typeof bookedProperties);
   }, [bookedProperties]);
 
   useEffect(() => {

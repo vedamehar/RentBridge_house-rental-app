@@ -87,7 +87,6 @@ const registerUser = async (req, res) => {
  */
 const loginUser = async (req, res) => {
     const { email, password, role } = req.body; // Use 'role' instead of 'role
-    console.log(email, password, role);
   try {
     // Validate input
     if (!email || !password || !role) {
@@ -111,7 +110,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    console.log(user.password, password)
     // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {

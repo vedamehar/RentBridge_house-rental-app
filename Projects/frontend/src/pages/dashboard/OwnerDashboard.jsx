@@ -325,7 +325,6 @@ const fetchProperties = async () => {
   };
 
   const handleShow = () => {
-    console.log('handleShow called');
     setShowModal(true);
   };
   const handleClose = () => {
@@ -383,7 +382,6 @@ const fetchProperties = async () => {
   const handleAddProperty = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     try {
-      console.log('newProperty state:', newProperty);
       if (!currentUser) {
         alert('Session expired. Please login again.');
         navigate('/login');
