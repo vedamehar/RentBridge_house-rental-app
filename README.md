@@ -466,8 +466,8 @@ npm run dev
 |------|------|------------------|
 | **🎯 Team Leader** | **Vedant Mehar** | Project architecture, deployment, backend development |
 | **💻 Frontend Developer** | **Supriya Patil** | React components, UI/UX design, state management |
-| **🔧 Backend Developer** | **Sneha Khatave** | API development, database design, authentication |
-| **🎨 UI/UX Developer** | **Snehal Yelwande** | Design system, responsive layouts, user experience |
+| **🔧 Backend Developer** | **Sneha Khatave** | Design system, responsive layouts, user experience |
+| **🎨 UI/UX Developer** | **Snehal Yelwande** | API development, database design, authentication |
 
 ### **Collaboration Tools**
 - **Version Control**: Git & GitHub
@@ -478,8 +478,8 @@ npm run dev
 ### **Individual Contributions**
 - **Vedant Mehar**: Project setup, JWT authentication, deployment configuration, booking cancellation system
 - **Supriya Patil**: React components, routing, context API, Material-UI integration
-- **Sneha Khatave**: Express.js APIs, MongoDB models, middleware development
-- **Snehal Yelwande**: CSS styling, responsive design, component styling, user interface polish
+- **Sneha Khatave**: CSS styling, responsive design, component styling, user interface polish
+- **Snehal Yelwande**: Express.js APIs, MongoDB models, middleware development 
 
 ---
 
