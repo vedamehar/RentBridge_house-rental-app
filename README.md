@@ -514,7 +514,7 @@ No installation required! The application is fully hosted and ready to use.
 
 ### **🧪 Test Accounts (For Demo)**
 ```
-First register, with the below credentials
+Login with below credentials
 
 Admin Account:
 Email: admin@rentbridge.com
