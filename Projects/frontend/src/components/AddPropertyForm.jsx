@@ -5,6 +5,7 @@ const AddPropertyForm = ({ onAdd }) => {
   const [formData, setFormData] = useState({
     title: '',
     prop_type: '',
+    prop_ad_type: 'For Rent', // Added this line
     prop_address: '',
     location: {
       city: '',
@@ -42,6 +43,7 @@ const AddPropertyForm = ({ onAdd }) => {
     setFormData({
       title: '',
       prop_type: '',
+      prop_ad_type: 'For Rent', // Added this line
       prop_address: '',
       location: {
         city: '',
@@ -79,6 +81,20 @@ const AddPropertyForm = ({ onAdd }) => {
             required 
             placeholder="e.g., Apartment, Villa, House"
           />
+        </Form.Group>
+
+        <Form.Group className="mb-2">
+          <Form.Label>Advertisement Type</Form.Label>
+          <Form.Control 
+            as="select"
+            name="prop_ad_type" 
+            value={formData.prop_ad_type} 
+            onChange={handleChange} 
+            required
+          >
+            <option value="For Rent">For Rent</option>
+            <option value="For Sale">For Sale</option>
+          </Form.Control>
         </Form.Group>
 
         <Form.Group className="mb-2">

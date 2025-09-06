@@ -31,7 +31,8 @@ const OwnerDashboard = () => {
   const [newProperty, setNewProperty] = useState({
     title: "",
     prop_type: "",
-    prop_address: "",
+  prop_ad_type: "For Rent",
+  prop_address: "",
     location: {
       city: "",
       state: ""
@@ -77,7 +78,8 @@ const OwnerDashboard = () => {
 
   const handleEdit = (property) => {
     setNewProperty({
-      ...property,
+  ...property,
+  prop_ad_type: property.prop_ad_type || 'For Rent',
       location: property.location || { city: "", state: "" }
     });
     setShowModal(true);
@@ -332,6 +334,7 @@ const fetchProperties = async () => {
     setNewProperty({
       title: "",
       prop_type: "",
+  prop_ad_type: 'For Rent',
       prop_address: "",
       location: { city: "", state: "" },
       owner_contact: "",
@@ -404,8 +407,9 @@ const fetchProperties = async () => {
       }
 
       const propertyData = {
-        ...newProperty,
-        prop_images: cleanImages(newProperty.prop_images)
+  ...newProperty,
+  prop_ad_type: newProperty.prop_ad_type || 'For Rent',
+  prop_images: cleanImages(newProperty.prop_images)
       };
 
       let response;
@@ -452,7 +456,8 @@ const fetchProperties = async () => {
       setNewProperty({
         title: '',
         prop_type: '',
-        prop_address: '',
+  prop_ad_type: 'For Rent',
+  prop_address: '',
         location: {
           city: '',
           state: ''
