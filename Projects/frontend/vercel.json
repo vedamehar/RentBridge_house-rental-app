@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "rentbridge-frontend",
+  "_comment": "Force rebuild with env vars",
   "builds": [
     {
       "src": "package.json",
