@@ -60,7 +60,7 @@ app.use('/api/admin', admin);
 app.use('/api/messages', messages);
 app.use('/api/contact', contact);
 
-// Health check route - Updated: Sept 6, 2025
+// Health check route 
 app.get('/api/health', (req, res) => {
   res.json({ 
     success: true, 
@@ -68,6 +68,16 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });
+});
+
+// Root route for GET /
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome to the RentBridge Backend API',
+    docs: '/api/health'
+  });
+
 });
 
 // Single error middleware (removed duplicate)
